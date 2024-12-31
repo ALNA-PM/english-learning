@@ -1,0 +1,182 @@
+<!-- survey/templates/survey/test.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Test</title>
+    <style>
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .draggable {
+            display: inline-block;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 5px;
+            cursor: move;
+        }
+        .dropzone {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            min-height: 50px;
+            margin: 10px 0;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>English Assessment Test</h1>
+    <form id="test-form" method="POST" action="{% url 'test_view' %}">
+        {% csrf_token %}
+        <div class="question">
+            <h3>1. Fill in the Blanks with Contextual Clues</h3>
+            <p>A ship in the harbor is <input type="text" name="fill_in_1" placeholder="safe/safety">, but that is not what ships are <input type="text" name="fill_in_2" placeholder="built/build"> for.</p>
+            <button type="button" onclick="skipQuestion(1)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>2. Match the verbs to the correct forms</h3>
+            <p>She <input type="text" name="match_1" placeholder="do/did"> her homework before dinner.</p>
+            <p>They <input type="text" name="match_2" placeholder="play/plays"> at the park every evening.</p>
+            <p>I <input type="text" name="match_3" placeholder="read/reads"> the book yesterday.</p>
+            <button type="button" onclick="skipQuestion(2)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>3. Rearrange the jumbled words</h3>
+            <p>Rearrange: "you / finished / have / homework / your?"</p>
+            <div class="dropzone" id="rearrange-dropzone"></div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)">you</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)">finished</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)">have</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)">homework</div>
+            <div class="draggable" draggable="true" ondragstart="drag(event)">your</div>
+            <button type="button" onclick="skipQuestion(3)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>4. Unscramble the letters</h3>
+            <p>Unscramble: EUGNOAREC</p>
+            <input type="text" name="unscramble_1" placeholder="Answer">
+            <button type="button" onclick="skipQuestion(4)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>5. Replace the word in brackets with a synonym</h3>
+            <p>The sunset was <input type="text" name="synonym_1" placeholder="beautiful">. It left everyone in awe.</p>
+            <button type="button" onclick="skipQuestion(5)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>6. Complete the word to match the meaning</h3>
+            <p>C <input type="text" name="completion_1" placeholder="_ _ P _ T _ N"> - A misleading statement.</p>
+            <p><input type="text" name="completion_2" placeholder="_ I _ S _ E"> - To express grief or sorrow.</p>
+            <button type="button" onclick="skipQuestion(6)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>7. Continue the story</h3>
+            <p>As the rain poured heavily, I realized I had left my umbrella... <input type="text" name="story_continuation" placeholder="Your continuation here"></p>
+            <button type="button" onclick="skipQuestion(7)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>8. Fill in the blanks to complete the dialogue</h3>
+            <p>A: "Hi, could you please <input type="text" name="dialogue_1" placeholder="______"> me how to get to the library?"</p>
+            <p>B: "Of course! Go straight and then <input type="text" name="dialogue_2" placeholder="______"> left at the traffic light."</p>
+            <button type="button" onclick="skipQuestion(8)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>9. Identify the errors</h3>
+            <p>Rewrite: "She don't knows where her keys are." <input type="text" name="error_detection" placeholder="Correct sentence"></p>
+            <button type="button" onclick="skipQuestion(9)">Skip</button>
+        </div>
+
+        <div class="question">
+            <h3>10. Match the phrases to form polite requests</h3>
+            <p>A. Could you bring me <input type="text" name="request_1" placeholder="______">?</p>
+            <p>B. May I have <input type="text" name="request_2" placeholder="______">?</p>
+            <p>C. Could you tell me <input type="text" name="request_3" placeholder="______">?</p>
+            <button type="button" onclick="skipQuestion(10)">Skip</button>
+        </div>
+
+        <button type="submit">Submit Test</button>
+    </form>
+
+    <div id="result" class="result" style="display:none;">
+        <h2>Test Results</h2>
+        <p>Your answers have been submitted. Here are the correct answers:</p>
+        <div id="correct-answers"></div>
+        <button onclick="goToLearningPage()">Go to Learning Page</button>
+    </div>
+
+    <script>
+        function skipQuestion(questionNumber) {
+            alert('Question ' + questionNumber + ' skipped.');
+            // Logic to handle skipping the question can be added here
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.innerHTML);
+        }
+
+        document.getElementById("rearrange-dropzone").addEventListener("dragover", function(ev) {
+            ev.preventDefault();
+        });
+
+        document.getElementById("rearrange-dropzone").addEventListener("drop", function(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.innerHTML += data + " ";
+        });
+
+        document.getElementById("test-form").onsubmit = function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            displayResults();
+        };
+
+        function displayResults() {
+            // Logic to display correct answers
+            const correctAnswers = {
+                fill_in_1: "safe",
+                fill_in_2: "built",
+                match_1: "does",
+                match_2: "play",
+                match_3: "read",
+                unscramble_1: "COURAGE",
+                synonym_1: "beautiful",
+                completion_1: "CONDITION",
+                completion_2: "MOURN",
+                story_continuation: "your continuation here",
+                dialogue_1: "tell",
+                dialogue_2: "turn",
+                error_detection: "She doesn't know where her keys are.",
+                request_1: "a glass of water",
+                request_2: "a pen",
+                request_3: "the time"
+            };
+
+            let resultHtml = '';
+            for (const [key, value] of Object.entries(correctAnswers)) {
+                resultHtml += `<p>${key}: ${value}</p>`;
+            }
+            document.getElementById("correct-answers").innerHTML = resultHtml;
+            document.getElementById("result").style.display = "block";
+        }
+
+        function goToLearningPage() {
+            window.location.href = "learning_page.html"; // Redirect to the learning page
+        }
+    </script>
+</body>
+</html> 

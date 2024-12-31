@@ -1,0 +1,26 @@
+<!-- survey/templates/survey/test_results.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results</title>
+</head>
+<body>
+    <h1>Your Test Results</h1>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <p>Your score: {{ score }} out of {{ total_questions }}</p>
+        <p>Your rank: {{ determine_rank(score) }}</p>
+        <h2>Correct Answers:</h2>
+        <ul>
+            {% for question, answer in correct_answers.items %}
+                <li>{{ question }}: {{ answer }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <a href="{% url 'learning_page' %}">Go to Learning Page</a>
+</body>
+</html>
